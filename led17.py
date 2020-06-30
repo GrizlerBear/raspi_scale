@@ -24,6 +24,18 @@ def initialize_seven_segment(waffle):
                 if j == 1 or j == 2 or j == 4 or j == 5:
                     waffle.set_pixel(i, j, "black")
 
+def counter():
+    for pixel in range(0, waffle.height - 1):
+        if waffle.get_pixel(0, pixel) == "white":
+            waffle.set_pixel(0, pixel, "gray")
+            waffle.set_pixel(0, pixel + 1, "white")
+            return
+        elif waffle.get_pixel(0, waffle.height-1) == "white":
+            waffle.set_pixel(0, waffle.height-1, "gray")
+            return
+    waffle.set_pixel(0,0, "white")
+    return
+
 
 columns = [gpio.InputDevice(2, pull_up=True),
            gpio.InputDevice(3, pull_up=True),
@@ -46,6 +58,28 @@ rows = [gpio.InputDevice(14),
         gpio.InputDevice(19),
         gpio.InputDevice(20)]
 
+app = guizero.App(title="GUI app", width=350, height=225, layout="grid")
+
+#columns = range(1, 13)
+#rows = range(1, 8)
+for i in range(1, len(columns)):
+    box = guizero.Box(app, width=20, height=20, align="bottom", grid=[i,0], border=True)
+    column = guizero.Text(box, text=i, align="bottom")
+
+for i in range(1, len(rows)):
+    box = guizero.Box(app, width=20, height=20, align="right", grid=[0,i], border=True)
+    row = guizero.Text(box, text=i, align="bottom")
+
+waffle = guizero.Waffle(app, align="top", grid=[1,1,12,7], width=12, height=7, pad=5, color="gray")
+initialize_seven_segment(waffle)
+
+waffle.repeat(1000, counter)
+
+app.display()
+
+
+
+"""
 while True:
     for i in range(0, len(columns)):
         check_active_column(columns[i], i)
@@ -55,3 +89,4 @@ while True:
 
     sleep(2)
     print("\nnew cycle:")
+"""
